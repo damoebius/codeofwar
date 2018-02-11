@@ -11,7 +11,6 @@
     "haxe": "4.1.0"
   },
   "devDependencies": {
-    "beanhx": "0.0.2",
     "body-parser": "~1.0.1",
     "createjs-haxe": "^1.7.0",
     "express": "~4.0.0",
@@ -21,7 +20,16 @@
     "mongodb": "2.2.33",
     "msignal": "^1.2.6",
     "nodemon": "^1.12.1",
-    "taminahx": "^2.0.2"
+    "taminahx": "^2.0.2",
+    "happy-deploy": "0.1.1",
+    "replace": "0.3.0",
+    "fs-extra": "3.0.1",
+    "husky": "0.14.1",
+    "happyhxcs": ">=0.0.1",
+    "haxecheckstyle": "2.1.12-dev.0"
+  },
+  "scripts": {
+    "precommit": "node ./scripts/pre-commit-checkstyle"
   },
   "config": {
     "haxe": "3.4.2",
