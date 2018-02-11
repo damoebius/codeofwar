@@ -1,5 +1,6 @@
 package;
 
+import com.tamina.planetwars.core.EventBus;
 import com.tamina.planetwars.core.UIElementId;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Player;
@@ -20,8 +21,7 @@ import org.tamina.log.QuickLogger;
         L.info("application launched");
     }
 
-    private static function gameCompleteHandler( event ):Void {
-        var r:BattleResult = cast event;
+    private static function gameCompleteHandler( r:BattleResult ):Void {
         if ( _saveURL != "" && r.winner.id == r.p1.id ) {
             L.info("saving score");
             var request:Http = new Http(_saveURL);
@@ -55,7 +55,7 @@ import org.tamina.log.QuickLogger;
         applicationCanvas.width = 771;
         applicationCanvas.height = 435;
         _renderer = new BattleRenderer(applicationCanvas, applicationCanvas.width, applicationCanvas.height);
-        //	Bean.on(EventDispatcher.getInstance(), GameEngineEvent.GAME_COMPLETE, gameCompleteHandler);
+        EventBus.getInstance().gameComplete.add(gameCompleteHandler);
         _renderer.init(new Player(firstPlayerName, 0xFF0000, firstPlayerScript), new Player(secondPlayerName, 0x00FF00, secondPlayerScript));
         if ( _saveURL != "" ) {
             _renderer.start();

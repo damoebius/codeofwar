@@ -1,4 +1,5 @@
 package com.tamina.planetwars.core;
+
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IPlayer;
@@ -11,30 +12,26 @@ class NodeGameEngine extends BaseGameEngine {
     }
 
     override public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
-        _IA1 = new NodeIA( player1.script, player1.id);
-        _IA2 = new NodeIA( player2.script, player2.id);
-        trace(_IA1.playerId);
-        trace(_IA2.playerId);
+        _ia1 = new NodeIA( player1.script, player1.id);
+        _ia2 = new NodeIA( player2.script, player2.id);
         super.getBattleResult(player1, player2, galaxy, turnSpeed);
-
         retrieveIAOrders();
-
     }
 
     public function dispose( ):Void {
         if ( _galaxy != null ) {
             _galaxy = null;
-            _IA1.turnResult_completeSignal.remove(IA_ordersResultHandler);
-            _IA1.turnMaxDuration_reachSignal.remove(maxDuration_reachHandler);
-            _IA1.turnResult_errorSignal.remove(turnResultErrorHandler);
+            _ia1.turnComplete.remove(ia_ordersResultHandler);
+            _ia1.turnMaxDurationReached.remove(maxDuration_reachHandler);
+            _ia1.turnError.remove(turnResultErrorHandler);
 
-            _IA2.turnResult_completeSignal.remove(IA_ordersResultHandler);
-            _IA2.turnMaxDuration_reachSignal.remove(maxDuration_reachHandler);
-            _IA2.turnResult_errorSignal.remove(turnResultErrorHandler);
-            _IA1.dispose();
-            _IA2.dispose();
-            _IA1 = null;
-            _IA2 = null;
+            _ia2.turnComplete.remove(ia_ordersResultHandler);
+            _ia2.turnMaxDurationReached.remove(maxDuration_reachHandler);
+            _ia2.turnError.remove(turnResultErrorHandler);
+            _ia1.dispose();
+            _ia2.dispose();
+            _ia1 = null;
+            _ia2 = null;
         }
     }
 
@@ -47,8 +44,6 @@ class NodeGameEngine extends BaseGameEngine {
 
     override private function endBattle( result:BattleResult ):IPlayer {
         return super.endBattle(result);
-        trace("P1 " + _IA1.playerId + " //P2 " + _IA2.playerId + " //Turn " + _currentTurn);
+        //trace("P1 " + _ia1.playerId + " //P2 " + _ia2.playerId + " //Turn " + _currentTurn);
     }
-
-
 }

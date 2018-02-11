@@ -1,4 +1,5 @@
 package com.tamina.planetwars.core;
+
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.Game;
 import com.tamina.planetwars.data.Order;
@@ -9,16 +10,11 @@ import haxe.Timer;
 import js.html.Worker;
 import msignal.Signal;
 
-/**
- * ...
- * @author d.mouton
- */
-
 class IA implements IIA {
 
-    public var turnMaxDuration_reachSignal:Signal1<String>;
-    public var turnResult_completeSignal:Signal1<TurnResult>;
-    public var turnResult_errorSignal:Signal1<String>;
+    public var turnMaxDurationReached:Signal1<String>;
+    public var turnComplete:Signal1<TurnResult>;
+    public var turnError:Signal1<String>;
 
     private var _worker:Worker;
     private var _turnOrders:Array<Order>;
@@ -27,9 +23,9 @@ class IA implements IIA {
     private var _startTime:Float;
 
     public function new( worker:Worker, playerId:String ) {
-        turnMaxDuration_reachSignal = new Signal1<String>();
-        turnResult_completeSignal = new Signal1<TurnResult>();
-        turnResult_errorSignal = new Signal1<String>();
+        turnMaxDurationReached = new Signal1<String>();
+        turnComplete = new Signal1<TurnResult>();
+        turnError = new Signal1<String>();
         init();
         _playerId = playerId;
         _worker = worker;
@@ -47,7 +43,6 @@ class IA implements IIA {
         _worker = null;
     }
 
-
     public function send( data:Galaxy ):Void {
         _startTime = Date.now().getTime();
         _worker.postMessage(new TurnMessage(playerId, data));
@@ -59,20 +54,17 @@ class IA implements IIA {
 
     private function maxDuration_reachHandler( ):Void {
         if ( _startTime > 0 ) {
-
             var t0:Float = Date.now().getTime();
             if ( t0 - _startTime > Game.MAX_TURN_DURATION ) {
                 Log.trace("maxDuration_reachHandler");
                 _turnTimer.stop();
                 _turnTimer = null;
-                //Bean.fire(EventDispatcher.getInstance(), IAEvent.TURN_MAX_DURATION_REACH, [playerId]);
-                turnMaxDuration_reachSignal.dispatch(playerId);
+                turnMaxDurationReached.dispatch(playerId);
             }
         }
     }
 
-
-    private function worker_messageHandler( message:Dynamic ):Void {
+    private function worker_messageHandler( message:{data:TurnResult} ):Void {
         _startTime = 0;
         if ( message.data != null ) {
             var turnResult:TurnResult = message.data;
@@ -80,11 +72,9 @@ class IA implements IIA {
                 Log.trace(turnResult.consoleMessage);
             }
             _turnOrders = turnResult.orders;
-            //Bean.fire(EventDispatcher.getInstance(), IAEvent.TURN_RESULT_COMPLETE+playerId, [message.data]);
-            turnResult_completeSignal.dispatch(turnResult) ;
+            turnComplete.dispatch(turnResult);
         } else {
-            //Bean.fire(EventDispatcher.getInstance(), IAEvent.TURN_RESULT_ERROR, [playerId]);
-            turnResult_errorSignal.dispatch(playerId) ;
+            turnError.dispatch(playerId);
         }
     }
 
@@ -99,6 +89,5 @@ class IA implements IIA {
     }
 
     public var playerId(get_playerId, null):String;
-
 
 }

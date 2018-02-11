@@ -10,12 +10,13 @@ import com.tamina.planetwars.data.Planet;
 import com.tamina.planetwars.data.PlanetPopulation;
 import com.tamina.planetwars.data.Ship;
 import msignal.Signal;
+import org.tamina.log.QuickLogger;
 
 class BaseGameEngine {
 
     public var playerOneScore:Int;
     public var playerTwoScore:Int;
-    public var battle_completeSignal:Signal1<BattleResult>;
+    public var battleComplete:Signal1<BattleResult>;
 
     private var _currentTurn:Int;
     private var _endBattleDate:Date;
@@ -26,11 +27,11 @@ class BaseGameEngine {
     private var _player2:IPlayer;
     private var _startBattleDate:Date;
 
-    private var _IA1:IIA;
-    private var _IA2:IIA;
+    private var _ia1:IIA;
+    private var _ia2:IIA;
 
     public function new( ) {
-        battle_completeSignal = new Signal1<BattleResult>();
+        battleComplete = new Signal1<BattleResult>();
     }
 
     public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
@@ -39,13 +40,13 @@ class BaseGameEngine {
         playerOneScore = 0;
         playerTwoScore = 0;
 
-        _IA1.turnResult_completeSignal.add(IA_ordersResultHandler);
-        _IA1.turnMaxDuration_reachSignal.add(maxDuration_reachHandler);
-        _IA1.turnResult_errorSignal.add(turnResultErrorHandler);
+        _ia1.turnComplete.add(ia_ordersResultHandler);
+        _ia1.turnMaxDurationReached.add(maxDuration_reachHandler);
+        _ia1.turnError.add(turnResultErrorHandler);
 
-        _IA2.turnResult_completeSignal.add(IA_ordersResultHandler);
-        _IA2.turnMaxDuration_reachSignal.add(maxDuration_reachHandler);
-        _IA2.turnResult_errorSignal.add(turnResultErrorHandler);
+        _ia2.turnComplete.add(ia_ordersResultHandler);
+        _ia2.turnMaxDurationReached.add(maxDuration_reachHandler);
+        _ia2.turnError.add(turnResultErrorHandler);
 
         _maxNumTurn = Game.GAME_MAX_NUM_TURN;
         _startBattleDate = Date.now();
@@ -60,16 +61,16 @@ class BaseGameEngine {
     }
 
     private function retrieveIAOrders( ):Void {
-        if ( !_IA1.isRunning() && !_IA2.isRunning() ) {
-            _IA1.init();
-            _IA2.init();
-            _IA1.send(_galaxy);
-            _IA2.send(_galaxy);
+        if ( !_ia1.isRunning() && !_ia2.isRunning() ) {
+            _ia1.init();
+            _ia2.init();
+            _ia1.send(_galaxy);
+            _ia2.send(_galaxy);
         }
     }
 
     private function turnResultErrorHandler( event ):Void {
-        trace("turn result error");
+        L.warn("turn result error");
         var playerId:String = cast event;
         if ( playerId == _player1.id ) {
             endBattle(new BattleResult( playerOneScore, playerTwoScore, _currentTurn, _player2, "RESULTAT DU TOUR INATTENDU", _player1, _player2 ));
@@ -80,7 +81,7 @@ class BaseGameEngine {
     }
 
     private function maxDuration_reachHandler( event ):Void {
-        trace("max duration reached");
+        L.warn("max duration reached");
         var playerId:String = cast event;
         if ( playerId == _player1.id ) {
             endBattle(new BattleResult( playerOneScore, playerTwoScore, _currentTurn, _player2, "DUREE DU TOUR TROP LONGUE", _player1, _player2 ));
@@ -90,8 +91,8 @@ class BaseGameEngine {
         }
     }
 
-    private function IA_ordersResultHandler( event ):Void {
-        if ( _IA2.turnOrders != null && _IA1.turnOrders != null ) {
+    private function ia_ordersResultHandler( event ):Void {
+        if ( _ia2.turnOrders != null && _ia1.turnOrders != null ) {
             computeCurrentTurn();
         }
     }
@@ -100,7 +101,7 @@ class BaseGameEngine {
         if ( _galaxy.fleet.length > 0 ) {
             var i:Int = _galaxy.fleet.length;
             while ( i-- > 0 ) {
-                var s:Ship = _galaxy.fleet[ i ];
+                var s:Ship = _galaxy.fleet[i];
                 if ( s.creationTurn + s.travelDuration <= _currentTurn ) {
                     resolveConflict(s, s.target);
                     _galaxy.fleet.splice(i, 1);
@@ -130,7 +131,7 @@ class BaseGameEngine {
         moveShips();
         increasePlanetGrowth();
         updatePlayerScore();
-        //Bean.fire(EventDispatcher.getInstance(), GameEngineEvent.TURN_UPDATE);
+        EventBus.getInstance().turnUpdated.dispatch();
         _currentTurn++;
         if ( _isComputing && _currentTurn >= _maxNumTurn ) {
             if ( playerOneScore > playerTwoScore ) {
@@ -149,7 +150,7 @@ class BaseGameEngine {
         var playerOneNumUnits:Int = 0;
         var playerTwoNumUnits:Int = 0;
         for ( i in 0..._galaxy.content.length ) {
-            var p:Planet = _galaxy.content[ i ];
+            var p:Planet = _galaxy.content[i];
             if ( p.owner.id == _player1.id ) {
                 playerOneScore += p.population;
                 playerOneNumUnits++;
@@ -160,7 +161,7 @@ class BaseGameEngine {
             }
         }
         for ( i in 0..._galaxy.fleet.length ) {
-            var s:Ship = _galaxy.fleet[ i ];
+            var s:Ship = _galaxy.fleet[i];
             if ( s.owner == _player1 ) {
                 playerOneScore += s.crew;
                 playerOneNumUnits++;
@@ -184,12 +185,12 @@ class BaseGameEngine {
 
         var delta:Float = Math.random() * 2 - 1;
         if ( delta > 0 ) {
-            createShipFromOrder(_IA1);
-            createShipFromOrder(_IA2);
+            createShipFromOrder(_ia1);
+            createShipFromOrder(_ia2);
         }
         else {
-            createShipFromOrder(_IA2);
-            createShipFromOrder(_IA1);
+            createShipFromOrder(_ia2);
+            createShipFromOrder(_ia1);
         }
 
     }
@@ -197,25 +198,24 @@ class BaseGameEngine {
     private function endBattle( result:BattleResult ):IPlayer {
         _isComputing = false;
         _endBattleDate = Date.now();
-        trace("fin du match : " + _player1.name + " = " + playerOneScore + "// " + _player2.name + " = " + playerTwoScore + " // WINNER " + result.winner.name);
-        trace("battle duration " + ( _endBattleDate.getTime() - _startBattleDate.getTime() ) / 1000 + " sec");
-        battle_completeSignal.dispatch(result);
+        L.info("fin du match : " + _player1.name + " = " + playerOneScore + "// " + _player2.name + " = " + playerTwoScore + " // WINNER " + result.winner.name);
+        L.info("battle duration " + ( _endBattleDate.getTime() - _startBattleDate.getTime() ) / 1000 + " sec");
+        battleComplete.dispatch(result);
+        EventBus.getInstance().gameComplete.dispatch(result);
         return result.winner;
-        //Bean.fire(EventDispatcher.getInstance(), GameEngineEvent.GAME_COMPLETE, [result]);
-
     }
 
     private function createShipFromOrder( ordersOwner:IIA ):Void {
         var orders:Array<Order> = ordersOwner.turnOrders;
         for ( i in 0...orders.length ) {
-            var element:Order = orders[ i ];
+            var element:Order = orders[i];
             var source:Planet = getPlanetByID(element.sourceID);
             var target:Planet = getPlanetByID(element.targetID);
             if ( isValidOrder(element, ordersOwner.playerId) ) {
 
                 var s:Ship = new Ship( element.numUnits, source, target, _currentTurn );
                 _galaxy.fleet.push(s);
-                //Bean.fire(EventDispatcher.getInstance(), GameEngineEvent.SHIP_CREATED, [s]);
+                EventBus.getInstance().shipCreated.dispatch(s);
                 source.population -= element.numUnits;
             }
             else {
@@ -237,28 +237,28 @@ class BaseGameEngine {
         var source:Planet = getPlanetByID(order.sourceID);
         var target:Planet = getPlanetByID(order.targetID);
         if ( source == null ) {
-            trace("Invalid Order : source inconnue");
+            L.warn("Invalid Order : source inconnue");
             result = false;
         }
         else if ( target == null ) {
-            trace("Invalid Order : target inconnue");
+            L.warn("Invalid Order : target inconnue");
             result = false;
         }
         else if ( source.population < order.numUnits ) {
-            trace("Invalid Order : la planete ne possede pas suffisement d'unité");
-            trace("Order sourcePoulation : " + source.population);
+            L.warn("Invalid Order : la planete ne possede pas suffisement d'unité");
+            L.warn("Order sourcePoulation : " + source.population);
             result = false;
         }
         else if ( source.owner.id != orderOwnerId ) {
-            trace("Invalid Order : le proprietaire de la planete n'est pas le meme que celui de l'ordre");
-            trace("Order source owner id : " + source.owner.id);
+            L.warn("Invalid Order : le proprietaire de la planete n'est pas le meme que celui de l'ordre");
+            L.warn("Order source owner id : " + source.owner.id);
             result = false;
         }
         if ( result == false ) {
-            trace("Order Owner : " + orderOwnerId);
-            trace("Order sourceID : " + order.sourceID);
-            trace("Order targetID : " + order.targetID);
-            trace("Order numUnits : " + order.numUnits);
+            L.warn("Order Owner : " + orderOwnerId);
+            L.warn("Order sourceID : " + order.sourceID);
+            L.warn("Order targetID : " + order.targetID);
+            L.warn("Order numUnits : " + order.numUnits);
         }
         return result;
     }
@@ -266,7 +266,7 @@ class BaseGameEngine {
     private function getPlanetByID( planetID:String ):Planet {
         var result:Planet = null;
         for ( i in 0..._galaxy.content.length ) {
-            var p:Planet = _galaxy.content[ i ];
+            var p:Planet = _galaxy.content[i];
             if ( p.id == planetID ) {
                 result = p;
                 break;
@@ -277,7 +277,7 @@ class BaseGameEngine {
 
     private function increasePlanetGrowth( ):Void {
         for ( i in 0..._galaxy.content.length ) {
-            var planet:Planet = _galaxy.content[ i ];
+            var planet:Planet = _galaxy.content[i];
             planet.population += Game.PLANET_GROWTH;
             if ( planet.population > PlanetPopulation.getMaxPopulation(planet.size) ) {
                 planet.population = PlanetPopulation.getMaxPopulation(planet.size);

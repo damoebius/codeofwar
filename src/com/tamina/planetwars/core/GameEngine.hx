@@ -19,8 +19,8 @@ class GameEngine extends BaseGameEngine {
     }
 
     override public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
-        _IA1 = new IA( new Worker( player1.script ), player1.id);
-        _IA2 = new IA( new Worker( player2.script ), player2.id);
+        _ia1 = new IA( new Worker( player1.script ), player1.id);
+        _ia2 = new IA( new Worker( player2.script ), player2.id);
         super.getBattleResult(player1, player2, galaxy, turnSpeed);
         _turnTimer = new Timer( turnSpeed );
         _turnTimer.run = retrieveIAOrders;

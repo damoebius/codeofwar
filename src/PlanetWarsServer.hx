@@ -1,4 +1,5 @@
 package ;
+
 import com.tamina.planetwars.core.NodeGameEngine;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.IAInfo;
@@ -40,11 +41,8 @@ class PlanetWarsServer {
         server.listen(SERVER_PORT);
 
         engine = new NodeGameEngine();
-        engine.battle_completeSignal.add(battleCompleteHandler);
-
-//Test.getInstance(this).getScoreByIAList('');
+        engine.battleComplete.add(battleCompleteHandler);
         getRemoteData();
-
     }
 
     private function getUpdateReqOpt( ):NodeHttpReqOpt {
@@ -60,7 +58,6 @@ class PlanetWarsServer {
         reqOpt.headers = headers;
         return reqOpt;
     }
-
 
     public function getRemoteData( ):Void {
         var headers = {
@@ -159,8 +156,6 @@ class PlanetWarsServer {
         data.IAList = _iaList;
         req.write(Node.json.stringify(data));
         req.end();
-
-
     }
 
     private function removeModule( name:String ):Void {
