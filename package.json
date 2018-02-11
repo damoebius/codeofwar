@@ -1,0 +1,30 @@
+{
+  "name": "codeofwar",
+  "author": "David Mouton",
+  "version": "6.0.0",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "main": "",
+  "preferGlobal": false,
+  "dependencies": {
+    "haxe": "4.1.0"
+  },
+  "devDependencies": {
+    "beanhx": "0.0.2",
+    "body-parser": "~1.0.1",
+    "createjs-haxe": "^1.7.0",
+    "express": "~4.0.0",
+    "haxe-mongomod": "^1.0.0",
+    "hxexpress": "^1.0.0",
+    "hxnodejs": "^4.0.10",
+    "mongodb": "2.2.33",
+    "msignal": "^1.2.6",
+    "nodemon": "^1.12.1",
+    "taminahx": "^2.0.2"
+  },
+  "config": {
+    "haxe": "3.4.2",
+    "haxelib_version": "3.2.0-rc.1"
+  }
+}
