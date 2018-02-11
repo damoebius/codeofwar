@@ -16,6 +16,8 @@ HaxeTasks.prototype.set = function ( deploy ) {
     compileClient.dir = '.';
     compileClient.src.push('src');
     compileClient.libs.push('msignal');
+    compileClient.libs.push('taminahx');
+    compileClient.libs.push('mconsole-npm');
     compileClient.libs.push('createjs-haxe');
     deploy.addTask(compileClient);
 

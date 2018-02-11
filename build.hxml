@@ -1,5 +1,7 @@
 -cp src
 -main PlanetWars
 -cp node_modules/msignal
+-cp node_modules/taminahx
+-cp node_modules/mconsole-npm
 -cp node_modules/createjs-haxe
 -js build/js/client.js

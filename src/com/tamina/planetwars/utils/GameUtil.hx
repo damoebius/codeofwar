@@ -1,4 +1,5 @@
 package com.tamina.planetwars.utils;
+
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.Game;
 import com.tamina.planetwars.data.IPlayer;
@@ -11,7 +12,6 @@ import com.tamina.planetwars.geom.Point;
  * Classe utilitaire
  * @author David Mouton
  */
-
 class GameUtil {
 
     /**
@@ -25,39 +25,13 @@ class GameUtil {
     }
 
     /**
-	 * Retourne la liste des planetes controlées par un joueur
-	 * @param	planetOwnerId : le proprietaire
-	 * @param	context : la Galaxy
-	 * @return la liste des planetes
-	 */
-    public static function getPlayerPlanets( planetOwnerId:String, context:Galaxy ):Array<Planet> {
-        var result:Array<Planet> = new Array<Planet>();
-        for ( i in 0...context.content.length ) {
-            var p:Planet = context.content[ i ];
-            if ( p.owner.id == planetOwnerId ) {
-                result.push(p);
-            }
-
-        }
-        return result;
-    }
-
-    /**
-	 * Retourne la liste des vaisseaux ennemis
-	 * @param	playerId : l'ID du joueur
-	 * @param	context : La Galaxy
+	 * Retourne la distance entre deux Planete en appelant getDistanceBetween()
+	 * @param	p1
+	 * @param	p2
 	 * @return
 	 */
-    public static function getEnnemyFleet( playerId:String, context:Galaxy ):Array<Ship> {
-        var result = new Array<Ship>();
-        for ( i in 0...context.fleet.length ) {
-            var s = context.fleet[ i ];
-            if ( s.owner.id != playerId ) {
-                result.push(s);
-            }
-
-        }
-        return result;
+    public static function getDistanceBetweenPlanets( p1:Planet, p2:Planet ):Float {
+        return getDistanceBetween(new Point(p1.x, p1.y), new Point(p2.x, p2.y));
     }
 
     /**
@@ -67,8 +41,82 @@ class GameUtil {
 	 * @return
 	 */
     public static function getTravelNumTurn( source:Planet, target:Planet ):Int {
-        var numTurn:Int = Math.ceil(GameUtil.getDistanceBetween(new Point( source.x, source.y ), new Point( target.x, target.y )) / Game.SHIP_SPEED);
-        return numTurn;
+        return Math.ceil(getDistanceBetween(new Point(source.x, source.y), new Point(target.x, target.y)) / Game.SHIP_SPEED);
+    }
+
+    /**
+	 * Retourne la liste des planetes controlées par un joueur
+	 * @param	planetOwnerId : le proprietaire
+	 * @param	context : la Galaxy
+	 * @return la liste des planetes
+	 */
+    public static function getPlayerPlanets( planetOwnerId:String, context:Galaxy ):Array<Planet> {
+        var result:Array<Planet> = new Array<Planet>();
+        for ( planet in context.content )
+            if ( planet.owner.id == planetOwnerId )
+                result.push(planet);
+        return result;
+    }
+
+    /**
+	 * Retourne la liste des planetes ennemies
+	 * @param	planetOwnerId : L'ID du joueur
+	 * @param	context : La galaxy
+	 * @return
+	 */
+    public static function getEnemyPlanets( planetOwnerId:String, context:Galaxy ):Array<Planet> {
+        var result:Array<Planet> = new Array<Planet>();
+        for ( planet in context.content )
+            if ( planet.owner.id != planetOwnerId )
+                result.push(planet);
+        return result;
+    }
+
+    /**
+	 * Retourne la liste d'un joueur
+	 * @param	playerId : l'ID du joueur
+	 * @param	context : La Galaxy
+	 * @return
+	 */
+    public static function getPlayerShips( playerId:String, context:Galaxy ):Array<Ship> {
+        var result = new Array<Ship>();
+        for ( ship in context.fleet )
+            if ( ship.owner.id == playerId )
+                result.push(ship);
+        return result;
+    }
+
+    /**
+	 * Retourne la liste des vaisseaux ennemis
+	 * @param	playerId : l'ID du joueur
+	 * @param	context : La Galaxy
+	 * @return
+	 */
+    public static function getEnemyShips( playerId:String, context:Galaxy ):Array<Ship> {
+        var result = new Array<Ship>();
+        for ( ship in context.fleet )
+            if ( ship.owner.id != playerId )
+                result.push(ship);
+        return result;
+    }
+
+    /**
+	 * Retourne la planete la plus proche de soi dans une liste de candidats
+	 * @param	source : la planete reference
+	 * @param	candidats : la liste des planetes a etudier
+	 * @return
+	 */
+    public static function getNearestPlanet( source:Planet, candidats:Array<Planet> ):Planet {
+        var result = candidats[0];
+        var currentDist = getDistanceBetweenPlanets(source, result);
+        for ( i in 0...candidats.length ) {
+            var element = candidats[i];
+            if ( currentDist > getDistanceBetweenPlanets(source, element) ) {
+                currentDist = getDistanceBetweenPlanets(source, element);
+                result = element;
+            }
+        }
+        return result;
     }
 
     /**
@@ -80,7 +128,7 @@ class GameUtil {
     public static function getEnnemyPlanets( planetOwnerId:String, context:Galaxy ):Array<Planet> {
         var result:Array<Planet> = new Array<Planet>();
         for ( i in 0...context.content.length ) {
-            var p:Planet = context.content[ i ];
+            var p:Planet = context.content[i];
             if ( p.owner.id != planetOwnerId ) {
                 result.push(p);
             }

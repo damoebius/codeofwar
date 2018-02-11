@@ -3,8 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Play</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/style.css" rel="stylesheet" media="screen">
 </head>
 <body>
+<div class="header">
+    <div class="container">
 
+        <h1>Play</h1>
+        <p>Expantion Origin est un jeu dans lequel deux joueurs s'affrontent pour le contrôle de la galaxie.<br> Ce jeu
+            est la base d'une compétition de programmation en JavaScript, Java, Haxe, TypeScript, ActionScript, de
+            robots logiques.</p>
+
+    </div>
+</div>
+<div class="page">
+    <div class="container">
+        <div class="eight_columns" style="width:890px; height:465px;">
+            <h3><span>Player</span></h3>
+            <div class="cdn">
+                <div style="margin:20px;">
+                    <div class="applicationWindow">
+                        <div class="applicationContainer">
+                            <div class="applicationHeader">
+                                <div id="playerOneName" class="playerName" style="position:absolute; left:20px;">
+                                    Unknown
+                                </div>
+                                <div id="playerTwoName" class="playerName" style="position:absolute; text-align:right;">
+                                    Unknown
+                                </div>
+                                <div style="position:absolute;text-align:center;left:0px;right:0px;">
+                                    <span class="score">score</span>
+                                    <span id="playerOneScore" class="playerOneScore">0</span>
+                                    <button id="fightButton" class="fightButton">FIGHT</button>
+                                    <span id="playerTwoScore" class="playerTwoScore">0</span>
+                                    <span class="score">score</span>
+                                </div>
+                            </div>
+                            <canvas id="applicationCanvas" style="width:771px; height:435px"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <br/>
+                <div class="cdn">
+                    <strong>DEBUG</strong>
+                    <div style="margin-left:80px;overflow:auto; max-height:150px;">
+                        <div id="haxe:trace" class="trace"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="js/jquery-1.9.0.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    function init() {
+        PlanetWars.init("kurgan", "js/basic_IA.js", "TS Bot", "js/basic_IA.js", "test.html", "index.php");
+        PlanetWars.gameCompleteHandler = function ( result ) {
+            alert('hjhjjhjhjjhjh')
+        };
+    };
+    window.onload = init;
+
+    function gameCompleteHandler2( result ) {
+        alert(result.winner);
+    }
+</script>
+<script src="js/easeljs-0.8.1.min.js"></script>
+<script src="js/client.js"></script>
 </body>
 </html>
