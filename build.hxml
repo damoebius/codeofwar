@@ -2,4 +2,4 @@
 -main PlanetWars
 -cp node_modules/msignal
 -cp node_modules/createjs-haxe
--js ../build/js/client.js
+-js build/js/client.js

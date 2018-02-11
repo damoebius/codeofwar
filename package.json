@@ -29,7 +29,8 @@
     "haxecheckstyle": "2.1.12-dev.0"
   },
   "scripts": {
-    "precommit": "node ./scripts/pre-commit-checkstyle"
+    "precommit": "node ./scripts/pre-commit-checkstyle",
+    "build": "node ./scripts/build"
   },
   "config": {
     "haxe": "3.4.2",
