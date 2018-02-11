@@ -1,0 +1,14 @@
+.idea
+out
+build
+*.vmdk
+*.iml
+.sass-cache
+node_modules
+*.ova
+*.tar.gz
+npm-debug.log
+*.hxproj
+versions.json
+version
+.cache
