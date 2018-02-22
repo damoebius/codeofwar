@@ -12,7 +12,7 @@ class ApiRouter {
             res.json("Platewars API");
         });
 
-        new PlayRoute().init(router);
+        new PublishRoute().init(router);
         return router;
     }
 }
