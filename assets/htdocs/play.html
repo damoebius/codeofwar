@@ -26,16 +26,16 @@
                     <div class="applicationWindow">
                         <div class="applicationContainer">
                             <div class="applicationHeader">
-                                <div id="playerOneName" class="playerName" style="position:absolute; left:20px;">
+                                <div id="playerOneName" class="playerName left">
                                     Unknown
                                 </div>
-                                <div id="playerTwoName" class="playerName" style="position:absolute; text-align:right;">
+                                <div id="playerTwoName" class="playerName right">
                                     Unknown
                                 </div>
-                                <div style="position:absolute;text-align:center;left:0px;right:0px;">
+                                <div class="scoreBlock">
                                     <span class="score">score</span>
                                     <span id="playerOneScore" class="playerOneScore">0</span>
-                                    <button id="fightButton" class="fightButton">FIGHT</button>
+                                    <button id="fightButton" class="fightButton" disabled>FIGHT</button>
                                     <span id="playerTwoScore" class="playerTwoScore">0</span>
                                     <span class="score">score</span>
                                 </div>
@@ -62,7 +62,7 @@
 <script src="js/bootstrap.min.js"></script>
 <script>
     function init() {
-        PlanetWars.init("kurgan", "js/basic_IA.js", "TS Bot", "js/basic_IA.js", "test.html", "index.php");
+        PlanetWars.init("kurgan", "basic_IA.js", "TS Bot", "basic_IA.js");
         PlanetWars.gameCompleteHandler = function ( result ) {
             alert('hjhjjhjhjjhjh')
         };

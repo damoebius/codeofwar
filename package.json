@@ -32,6 +32,7 @@
   "scripts": {
     "precommit": "node ./scripts/pre-commit-checkstyle",
     "build": "node ./scripts/build",
+    "start": "node ./build/server",
     "postinstall": "node ./scripts/install"
   },
   "config": {

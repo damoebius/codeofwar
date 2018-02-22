@@ -1533,3 +1533,38 @@ body {
     width: 150px;
     font-weight: bold;
 }
+
+.scoreBlock {
+    position: absolute;
+    text-align: center;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+}
+
+.playerName {
+    position: absolute;
+    top: 0px;
+}
+
+.left {
+    left: 20px;
+    color: red;
+}
+
+.right {
+    right: 20px;
+    color: lightgreen;
+}
+
+.applicationHeader {
+    padding-bottom: 20px;
+}
+
+.playerOneScore {
+    color: red;
+}
+
+.playerTwoScore {
+    color: lightgreen;
+}
