@@ -10,7 +10,7 @@ HaxeTasks.prototype.set = function ( deploy ) {
     // Compile Client
     var compileClient = new deploy.CompileHaxeTask(
         'PlanetWars',
-        this.output,
+        this.output + '/htdocs/js/client.js',
         false
     );
     compileClient.dir = '.';
@@ -20,6 +20,19 @@ HaxeTasks.prototype.set = function ( deploy ) {
     compileClient.libs.push('mconsole-npm');
     compileClient.libs.push('createjs-haxe');
     deploy.addTask(compileClient);
+
+    // Compile Server
+    var compileServer = new deploy.CompileHaxeTask(
+        'Server',
+        this.output + '/server.js',
+        false
+    );
+    compileServer.dir = '.';
+    compileServer.src.push('src');
+    compileServer.libs.push('hxnodejs/src');
+    compileServer.libs.push('taminahx');
+    compileServer.libs.push('hxexpress/src');
+    deploy.addTask(compileServer);
 
 };
 

@@ -8,7 +8,7 @@ var output = 'build';
 
 deploy.addTask(new CleanTask(output));
 deploy.addTask(new AssetsTask('assets', output));
-var haxeTasks = new CompileTask(output + '/js/client.js');
+var haxeTasks = new CompileTask(output);
 haxeTasks.set(deploy);
 
 deploy.run();

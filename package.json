@@ -31,7 +31,8 @@
   },
   "scripts": {
     "precommit": "node ./scripts/pre-commit-checkstyle",
-    "build": "node ./scripts/build"
+    "build": "node ./scripts/build",
+    "postinstall": "node ./scripts/install"
   },
   "config": {
     "haxe": "3.4.2",

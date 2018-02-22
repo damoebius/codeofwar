@@ -4,4 +4,13 @@
 -cp node_modules/taminahx
 -cp node_modules/mconsole-npm
 -cp node_modules/createjs-haxe
--js build/js/client.js
+-js build/htdocs/js/client.js
+
+--next
+
+-cp src
+-main Server
+-cp node_modules/hxnodejs/src
+-cp node_modules/hxexpress/src
+-cp node_modules/taminahx
+-js build/server.js
