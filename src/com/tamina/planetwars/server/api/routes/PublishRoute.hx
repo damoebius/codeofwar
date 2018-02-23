@@ -7,9 +7,10 @@ import haxe.HTTPStatus;
 import js.node.Fs;
 import js.Node;
 
-typedef RequestBody = {
+typedef PublishRequestBody = {
     var content:String;
     var filename:String;
+    var apiKey:String;
 }
 
 class PublishRoute extends BaseRoute {
@@ -23,8 +24,7 @@ class PublishRoute extends BaseRoute {
     override public function init(router:Router):Void {
 
         router.post(PATH, function(req:Request, res:Response):Void {
-            Node.console.dir(req);
-            var body:RequestBody = cast req.body;
+            var body:PublishRequestBody = cast req.body;
             if (body.content != null) {
                 Fs.writeFileSync(Node.__dirname + "/bots/ddd.js", body.content);
                 res.json("publish successful");

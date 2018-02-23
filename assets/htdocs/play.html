@@ -62,16 +62,9 @@
 <script src="js/bootstrap.min.js"></script>
 <script>
     function init() {
-        PlanetWars.init("kurgan", "basic_IA.js", "TS Bot", "basic_IA.js");
-        PlanetWars.gameCompleteHandler = function ( result ) {
-            alert('hjhjjhjhjjhjh')
-        };
+        PlanetWars.init("My bot", "your_IA.js", "Basic Bot", "basic_IA.js");
     };
     window.onload = init;
-
-    function gameCompleteHandler2( result ) {
-        alert(result.winner);
-    }
 </script>
 <script src="js/easeljs-0.8.1.min.js"></script>
 <script src="js/tweenjs-0.6.2.min.js"></script>

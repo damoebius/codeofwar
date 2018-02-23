@@ -13,6 +13,7 @@ class ApiRouter {
         });
 
         new PublishRoute().init(router);
+        new LoginRoute().init(router);
         return router;
     }
 }

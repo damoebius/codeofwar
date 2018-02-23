@@ -31,6 +31,7 @@
     "build": "node ./scripts/build",
     "start": "node ./build/server",
     "publish": "node ./scripts/publish",
+    "login": "node ./scripts/login",
     "postinstall": "node ./scripts/install"
   },
   "config": {

@@ -8,6 +8,14 @@ if (process.argv.length != 3) {
     console.warn("usage : publish <filename>");
     process.exit();
 }
+
+var confmodule = __dirname + '/.codeofwar';
+if (!fs.existsSync(confmodule)) {
+    console.error("please login first : npm run login <username> <password>");
+    process.exit();
+}
+const conf = JSON.parse(fs.readFileSync(confmodule));
+
 var filename = process.argv[2];
 console.log('Publishing ' + filename);
 fs.readFile(filename, 'utf8', function (err, data) {
@@ -18,7 +26,8 @@ fs.readFile(filename, 'utf8', function (err, data) {
 
     var post_data = JSON.stringify({
         'content': data,
-        'filename': filename
+        'filename': filename,
+        'apiKey': conf.apiKey
     });
 
     var options = {
