@@ -1568,3 +1568,12 @@ body {
 .playerTwoScore {
     color: lightgreen;
 }
+
+.applicationContainer table {
+    width: 100%;
+    color: whitesmoke;
+}
+
+.applicationContainer table tr {
+    width: 100%;
+}

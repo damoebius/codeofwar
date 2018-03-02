@@ -1,4 +1,53 @@
-<div>
-    coucou {{title}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bots List</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/css/style.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<div class="header">
+    <div class="container">
+
+        <h1>Bots</h1>
+        <p>Expantion Origin est un jeu dans lequel deux joueurs s'affrontent pour le contrôle de la galaxie.<br> Ce jeu
+            est la base d'une compétition de programmation en JavaScript, Java, Haxe, TypeScript, ActionScript, de
+            robots logiques.</p>
+
+    </div>
 </div>
-bots
+<div class="page">
+    <div class="container">
+        <div class="eight_columns" style="width:890px; height:465px;">
+            <h3><span>List</span></h3>
+            <div class="cdn">
+                <div style="margin:20px;">
+                    <div class="applicationWindow">
+                        <div class="applicationContainer">
+                            <table>
+                                {{#bots}}
+                                <tr>
+                                    <td style="min-width: 50px">{{id}}</td>
+                                    <td style="width: 100%">{{name}}</td>
+                                    <td>{{score}}</td>
+                                </tr>
+                                {{/bots}}
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/js/jquery-1.9.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script>
+
+</script>
+
+</body>
+</html>

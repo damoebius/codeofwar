@@ -1,5 +1,6 @@
 package com.tamina.planetwars.server.api.routes;
 
+import com.tamina.planetwars.data.Mock;
 import com.tamina.planetwars.server.api.middleware.Cache;
 import express.Request;
 import express.Response;
@@ -17,7 +18,8 @@ class BotsRoute extends BaseRoute {
 
         router.get(PATH, function(req:Request, res:Response):Void {
             Cache.instance.reset();
-            res.render('bots', { title: 'Express' });
+            var dataSource = new Mock();
+            res.render('bots', { bots: dataSource.getIAList() });
         });
 
     }
