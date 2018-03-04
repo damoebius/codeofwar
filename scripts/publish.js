@@ -47,6 +47,9 @@ fs.readFile(filename, 'utf8', function (err, data) {
             data += chunk;
         });
         res.on('end', () => {
+            if (res.statusCode != 200) {
+                console.error("Error Code : " + res.statusCode);
+            }
             console.log(data);
         });
     });

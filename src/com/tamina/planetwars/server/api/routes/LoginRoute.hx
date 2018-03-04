@@ -34,15 +34,15 @@ class LoginRoute extends BaseRoute {
             && body.username.length > 3
             && body.password != null
             && body.password.length > 3) {
-                var apiKey:String = Crypto.createHash(CryptoAlgorithm.SHA256).update(body.password).digest("base64");
+                var apiKey:String = Crypto.createHash(CryptoAlgorithm.SHA256).update(body.username + body.password).digest("base64");
                 _bll.getUserByName(body.username)
                 .then(function(result:User):Void {
                     if (result == null) {
                         Node.console.log("new user");
-                        _bll.insertOrUpdatePartner(new User(body.username, apiKey));
+                        _bll.insertOrUpdateUser(new User(body.username, apiKey));
                         res.json(apiKey);
                     } else if (result.password != apiKey) {
-                        Node.console.log("bad password");
+                        Node.console.log("bad password!");
                         res.status(HTTPStatus.BadRequest);
                         res.json("");
                     } else {
@@ -51,10 +51,7 @@ class LoginRoute extends BaseRoute {
 
                 })
                 .catchError(function(error:MongoError):Void {
-                    Node.console.log("arrrrrr");
-                    Node.console.log(error);
-                    res.status(HTTPStatus.InternalServerError);
-                    res.json(error);
+                    sendErrorResponse(res, error);
                 });
             } else {
                 res.status(HTTPStatus.BadRequest);

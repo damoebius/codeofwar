@@ -261,6 +261,7 @@ extern class MongoCollection
     function listIndexes(options:BatchOptions):js.node.mongodb.CommandCursor;
 
 
+    var save:Dynamic;
     var insert:Dynamic;
     var update:Dynamic;
     var remove:Dynamic;

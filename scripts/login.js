@@ -36,11 +36,15 @@ var request = http.request(options, function (res) {
         data += chunk;
     });
     res.on('end', () => {
-        var content = {
-            apiKey: JSON.parse(data)
-        };
-        fs.writeFileSync(filename, JSON.stringify(content));
-        console.log("login successful");
+        if (res.statusCode == 200) {
+            var content = {
+                apiKey: JSON.parse(data)
+            };
+            fs.writeFileSync(filename, JSON.stringify(content));
+            console.log("login successful");
+        } else {
+            console.error("Error Code : " + res.statusCode);
+        }
     });
 });
 
