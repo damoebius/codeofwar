@@ -6,10 +6,12 @@ class User {
     public var username:String;
     public var password:String;
     public var bot:String;
+    public var score:Int = 0;
 
     public function new(username:String, password:String) {
         this.username = username;
         this.password = password;
+        this.score = 0;
     }
 
 

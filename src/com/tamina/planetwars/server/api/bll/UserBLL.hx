@@ -48,6 +48,22 @@ class UserBLL {
         });
     }
 
+    public function getUsers():Promise<Array<User>> {
+
+        return new Promise(function(resolve, reject) {
+            MongoClient.connect(Config.getInstance().db, function(error:MongoError, db:MongoDatabase) {
+                db.collection(COLLECTION_NAME, null, null).find(null).toArray(function(error:MongoError, result:Array<MongoDocument>):Void {
+                    db.close();
+                    if (error != null) {
+                        reject(error);
+                    } else {
+                        resolve(cast result);
+                    }
+                });
+            });
+        });
+    }
+
     public function insertOrUpdateUser(user:User):Promise<WriteOpResult> {
 
         return new Promise(function(resolve, reject) {
