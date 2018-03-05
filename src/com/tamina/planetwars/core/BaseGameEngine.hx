@@ -10,7 +10,6 @@ import com.tamina.planetwars.data.Planet;
 import com.tamina.planetwars.data.PlanetPopulation;
 import com.tamina.planetwars.data.Ship;
 import msignal.Signal;
-import org.tamina.log.QuickLogger;
 
 class BaseGameEngine {
 
@@ -21,7 +20,6 @@ class BaseGameEngine {
     private var _currentTurn:Int;
     private var _endBattleDate:Date;
     private var _galaxy:Galaxy;
-    private var _isComputing:Bool;
     private var _maxNumTurn:Int;
     private var _player1:IPlayer;
     private var _player2:IPlayer;
@@ -29,14 +27,18 @@ class BaseGameEngine {
 
     private var _ia1:IIA;
     private var _ia2:IIA;
+    private var _logger:ILogger;
 
-    public function new( ) {
+    public var isComputing(default, null):Bool;
+
+    public function new( logger:ILogger ) {
         battleComplete = new Signal1<BattleResult>();
+        _logger = logger;
     }
 
     public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
         _currentTurn = 0;
-        _isComputing = false;
+        isComputing = false;
         playerOneScore = 0;
         playerTwoScore = 0;
 
@@ -51,7 +53,7 @@ class BaseGameEngine {
         _maxNumTurn = Game.GAME_MAX_NUM_TURN;
         _startBattleDate = Date.now();
         _currentTurn = 0;
-        _isComputing = true;
+        isComputing = true;
         _player1 = player1;
         _player2 = player2;
         _galaxy = galaxy;
@@ -70,7 +72,6 @@ class BaseGameEngine {
     }
 
     private function turnResultErrorHandler( event ):Void {
-        L.warn("turn result error");
         var playerId:String = cast event;
         if ( playerId == _player1.id ) {
             endBattle(new BattleResult( playerOneScore, playerTwoScore, _currentTurn, _player2, "RESULTAT DU TOUR INATTENDU", _player1, _player2 ));
@@ -81,7 +82,6 @@ class BaseGameEngine {
     }
 
     private function maxDuration_reachHandler( event ):Void {
-        L.warn("max duration reached");
         var playerId:String = cast event;
         if ( playerId == _player1.id ) {
             endBattle(new BattleResult( playerOneScore, playerTwoScore, _currentTurn, _player2, "DUREE DU TOUR TROP LONGUE", _player1, _player2 ));
@@ -92,6 +92,7 @@ class BaseGameEngine {
     }
 
     private function ia_ordersResultHandler( event ):Void {
+        _logger.log("order received");
         if ( _ia2.turnOrders != null && _ia1.turnOrders != null ) {
             computeCurrentTurn();
         }
@@ -127,13 +128,14 @@ class BaseGameEngine {
     }
 
     private function computeCurrentTurn( ):Void {
+        _logger.log("computeCurrentTurn");
         parseOrder();
         moveShips();
         increasePlanetGrowth();
         updatePlayerScore();
         EventBus.getInstance().turnUpdated.dispatch();
         _currentTurn++;
-        if ( _isComputing && _currentTurn >= _maxNumTurn ) {
+        if ( isComputing && _currentTurn >= _maxNumTurn ) {
             if ( playerOneScore > playerTwoScore ) {
                 endBattle(new BattleResult( playerOneScore, playerTwoScore, _currentTurn, _player1, "DUREE MAX ATTEINTE", _player1, _player2 ));
             }
@@ -196,10 +198,9 @@ class BaseGameEngine {
     }
 
     private function endBattle( result:BattleResult ):IPlayer {
-        _isComputing = false;
+        _logger.log("end battle");
+        isComputing = false;
         _endBattleDate = Date.now();
-        L.info("fin du match : " + _player1.name + " = " + playerOneScore + "// " + _player2.name + " = " + playerTwoScore + " // WINNER " + result.winner.name);
-        L.info("battle duration " + ( _endBattleDate.getTime() - _startBattleDate.getTime() ) / 1000 + " sec");
         battleComplete.dispatch(result);
         EventBus.getInstance().gameComplete.dispatch(result);
         return result.winner;
@@ -237,28 +238,16 @@ class BaseGameEngine {
         var source:Planet = getPlanetByID(order.sourceID);
         var target:Planet = getPlanetByID(order.targetID);
         if ( source == null ) {
-            L.warn("Invalid Order : source inconnue");
             result = false;
         }
         else if ( target == null ) {
-            L.warn("Invalid Order : target inconnue");
             result = false;
         }
         else if ( source.population < order.numUnits ) {
-            L.warn("Invalid Order : la planete ne possede pas suffisement d'unité");
-            L.warn("Order sourcePoulation : " + source.population);
             result = false;
         }
         else if ( source.owner.id != orderOwnerId ) {
-            L.warn("Invalid Order : le proprietaire de la planete n'est pas le meme que celui de l'ordre");
-            L.warn("Order source owner id : " + source.owner.id);
             result = false;
-        }
-        if ( result == false ) {
-            L.warn("Order Owner : " + orderOwnerId);
-            L.warn("Order sourceID : " + order.sourceID);
-            L.warn("Order targetID : " + order.targetID);
-            L.warn("Order numUnits : " + order.numUnits);
         }
         return result;
     }
@@ -285,9 +274,4 @@ class BaseGameEngine {
         }
     }
 
-    private function get_isComputing( ):Bool {
-        return _isComputing;
-    }
-
-    public var isComputing(get_isComputing, null):Bool;
 }

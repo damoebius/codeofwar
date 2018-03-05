@@ -9,7 +9,8 @@ import js.node.mongodb.MongoDocument;
 import js.node.mongodb.MongoError;
 import js.Node;
 import js.Promise;
-class UserBLL {
+
+class UserBLL implements IUserBLL{
 
     private static inline var COLLECTION_NAME:String = "users";
 

@@ -1,5 +1,7 @@
 package ;
 
+import com.tamina.planetwars.server.api.bll.BLLFactory;
+import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.core.NodeGameEngine;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.IAInfo;
@@ -15,11 +17,11 @@ class PlanetWarsServer {
 
     private var _engine:NodeGameEngine;
     private var _iaList:Array<IAInfo>;
-    private var _userBLL:UserBLL;
+    private var _userBLL:IUserBLL;
 
     public function new():Void {
         Node.console.info('init application');
-        _userBLL = new UserBLL();
+        _userBLL = BLLFactory.instance.createUserBLL();
         _engine = new NodeGameEngine();
         _engine.battleComplete.add(battleCompleteHandler);
     }
@@ -60,17 +62,19 @@ class PlanetWarsServer {
     }
 
     private function process():Void {
+        Node.console.log("process");
         for (i in 0..._iaList.length) {
             var targetIA = _iaList[i];
-            var p1 = new Player(targetIA.name, 0, './' + URLUtil.getFileName(targetIA.url));
+            var p1 = new Player(targetIA.name, 0, Node.__dirname + '/bots/' + targetIA.url);
             for (j in 0... _iaList.length) {
-                var p2 = new Player(_iaList[j].name, 0, './' + URLUtil.getFileName(_iaList[j].url));
+                var p2 = new Player(_iaList[j].name, 0, Node.__dirname + '/bots/' + _iaList[j].url);
                 if (targetIA.id != _iaList[j].id) {
                     _engine.dispose();
-                    var g = GameUtil.createRandomGalaxy(1800, 1200, 20, p1, p2);
+                    var g = GameUtil.createRandomGalaxy(771, 435, 20, p1, p2);
                     _engine.getBattleResult(p1, p2, g);
-                    removeModule(p1.script);
-                    removeModule(p2.script);
+                    return;
+                    //removeModule(p1.script);
+                    //removeModule(p2.script);
                 }
             }
         }

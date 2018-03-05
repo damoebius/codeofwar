@@ -17,6 +17,7 @@ class Server {
     private var _planetWarsServer:PlanetWarsServer;
 
     private function new() {
+        Config.getInstance().local = Node.process.argv.indexOf("-local")> 0;
         _planetWarsServer = new PlanetWarsServer();
         var mustache = new Mustache();
         _express = new ExpressServer();

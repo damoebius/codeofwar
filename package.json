@@ -30,6 +30,7 @@
     "precommit": "node ./scripts/pre-commit-checkstyle",
     "build": "node ./scripts/build",
     "start": "node ./build/server",
+    "start:dev" : "nodemon --inspect build\\server.js --ignore build\\bots -local --delay 2",
     "publish": "node ./scripts/publish",
     "login": "node ./scripts/login",
     "postinstall": "node ./scripts/install"

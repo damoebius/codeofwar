@@ -1,5 +1,7 @@
 package com.tamina.planetwars.server.api.routes;
 
+import com.tamina.planetwars.server.api.bll.BLLFactory;
+import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.data.IAInfo;
 import com.tamina.planetwars.server.api.bll.UserBLL;
 import com.tamina.planetwars.server.api.dao.User;
@@ -13,11 +15,11 @@ class BotsRoute extends BaseRoute {
 
     private static inline var PATH:String = "/bots";
 
-    private var _bll:UserBLL;
+    private var _bll:IUserBLL;
 
     public function new() {
         super();
-        _bll = new UserBLL();
+        _bll = BLLFactory.instance.createUserBLL();
     }
 
     override public function init(router:Router):Void {

@@ -1,5 +1,6 @@
 package com.tamina.planetwars.core;
 
+import js.Node;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IPlayer;
@@ -7,7 +8,7 @@ import com.tamina.planetwars.data.IPlayer;
 class NodeGameEngine extends BaseGameEngine {
 
     public function new( ) {
-        super();
+        super(cast Node.console);
     }
 
     override public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
@@ -35,12 +36,13 @@ class NodeGameEngine extends BaseGameEngine {
 
     override private function computeCurrentTurn( ):Void {
         super.computeCurrentTurn();
-        if ( _isComputing == true ) {
+        if ( isComputing == true ) {
             retrieveIAOrders();
         }
     }
 
     override private function endBattle( result:BattleResult ):IPlayer {
+        Node.console.dir(result);
         return super.endBattle(result);
     }
 }

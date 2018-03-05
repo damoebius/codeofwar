@@ -1,4 +1,5 @@
 package com.tamina.planetwars.core;
+import js.Browser;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IPlayer;
@@ -15,7 +16,7 @@ class GameEngine extends BaseGameEngine {
     private var _turnTimer:Timer;
 
     public function new( ) {
-        super();
+        super(cast Browser.console);
     }
 
     override public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {

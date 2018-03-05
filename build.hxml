@@ -1,4 +1,10 @@
 -cp src
+-main MyIA
+-js build/htdocs/bots/your_IA.js
+
+--next
+
+-cp src
 -main PlanetWars
 -cp node_modules/msignal
 -cp node_modules/taminahx

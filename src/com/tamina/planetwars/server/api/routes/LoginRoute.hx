@@ -1,5 +1,7 @@
 package com.tamina.planetwars.server.api.routes;
 
+import com.tamina.planetwars.server.api.bll.BLLFactory;
+import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.server.api.bll.UserBLL;
 import com.tamina.planetwars.server.api.dao.User;
 import express.Request;
@@ -19,11 +21,11 @@ class LoginRoute extends BaseRoute {
 
     private static inline var PATH:String = "/login";
 
-    private var _bll:UserBLL;
+    private var _bll:IUserBLL;
 
     public function new() {
         super();
-        _bll = new UserBLL();
+        _bll = BLLFactory.instance.createUserBLL();
     }
 
     override public function init(router:Router):Void {
@@ -42,6 +44,7 @@ class LoginRoute extends BaseRoute {
                         _bll.insertOrUpdateUser(new User(body.username, apiKey));
                         res.json(apiKey);
                     } else if (result.password != apiKey) {
+                        Node.console.log(apiKey);
                         Node.console.log("bad password!");
                         res.status(HTTPStatus.BadRequest);
                         res.json("");

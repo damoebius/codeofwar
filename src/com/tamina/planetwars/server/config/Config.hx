@@ -10,6 +10,7 @@ class Config {
     public var port:Int;
     public var db:String;
     public var adminpwd:String;
+    public var local:Bool;
 
     private function new() {
     }

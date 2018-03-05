@@ -50,6 +50,7 @@ class NodeIA implements IIA {
         try {
             _worker.onmessage({ data:new TurnMessage(playerId, context)});
         } catch (e:js.Error) {
+            Node.console.dir(e);
             turnError.dispatch(playerId);
         }
     }
@@ -64,7 +65,6 @@ class NodeIA implements IIA {
 
             var t0:Float = Date.now().getTime();
             if ( t0 - _startTime > Game.MAX_TURN_DURATION ) {
-                trace("maxDuration_reachHandler");
                 turnMaxDurationReached.dispatch(playerId);
                 result = false;
             }

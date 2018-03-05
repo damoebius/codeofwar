@@ -1,5 +1,7 @@
 package com.tamina.planetwars.server.api.routes;
 
+import com.tamina.planetwars.server.api.bll.BLLFactory;
+import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.server.api.bll.UserBLL;
 import com.tamina.planetwars.server.api.dao.User;
 import com.tamina.planetwars.server.api.events.ServerEventBus;
@@ -21,11 +23,11 @@ class PublishRoute extends BaseRoute {
 
     private static inline var PATH:String = "/publish";
 
-    private var _userBll:UserBLL;
+    private var _userBll:IUserBLL;
 
     public function new() {
         super();
-        _userBll = new UserBLL();
+        _userBll = BLLFactory.instance.createUserBLL();
     }
 
     override public function init(router:Router):Void {
