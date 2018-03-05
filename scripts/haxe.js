@@ -32,6 +32,7 @@ HaxeTasks.prototype.set = function ( deploy ) {
     compileServer.libs.push('hxnodejs/src');
     compileServer.libs.push('taminahx');
     compileServer.libs.push('hxexpress/src');
+    compileServer.libs.push('msignal');
     deploy.addTask(compileServer);
 
 };

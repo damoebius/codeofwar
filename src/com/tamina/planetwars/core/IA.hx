@@ -17,8 +17,6 @@ class IA implements IIA {
     public var turnError:Signal1<String>;
 
     private var _worker:Worker;
-    private var _turnOrders:Array<Order>;
-    private var _playerId:String;
     private var _turnTimer:Timer;
     private var _startTime:Float;
 
@@ -27,7 +25,7 @@ class IA implements IIA {
         turnComplete = new Signal1<TurnResult>();
         turnError = new Signal1<String>();
         init();
-        _playerId = playerId;
+        this.playerId = playerId;
         _worker = worker;
         _worker.onmessage = worker_messageHandler;
         _turnTimer = new Timer( 10 );
@@ -36,7 +34,7 @@ class IA implements IIA {
     }
 
     public function init( ):Void {
-        _turnOrders = null;
+        turnOrders = null;
     }
 
     public function dispose( ):Void {
@@ -71,23 +69,14 @@ class IA implements IIA {
             if ( turnResult.consoleMessage.length > 0 ) {
                 Log.trace(turnResult.consoleMessage);
             }
-            _turnOrders = turnResult.orders;
+            turnOrders = turnResult.orders;
             turnComplete.dispatch(turnResult);
         } else {
             turnError.dispatch(playerId);
         }
     }
 
-    private function get_turnOrders( ):Array<Order> {
-        return _turnOrders;
-    }
-
-    public var turnOrders(get_turnOrders, null):Array<Order>;
-
-    private function get_playerId( ):String {
-        return _playerId;
-    }
-
-    public var playerId(get_playerId, null):String;
+    public var turnOrders(default, null):Array<Order>;
+    public var playerId(default, null):String;
 
 }

@@ -2,6 +2,7 @@ package com.tamina.planetwars.server.api.routes;
 
 import com.tamina.planetwars.server.api.bll.UserBLL;
 import com.tamina.planetwars.server.api.dao.User;
+import com.tamina.planetwars.server.api.events.ServerEventBus;
 import express.Request;
 import express.Response;
 import express.Router;
@@ -39,6 +40,7 @@ class PublishRoute extends BaseRoute {
                         _userBll.addBot(user);
                         Fs.writeFileSync(Node.__dirname + "/bots/" + user.bot, body.content);
                         res.json("publish successful");
+                        ServerEventBus.instance.botPublished.dispatch();
                     } else {
                         res.status(HTTPStatus.Unauthorized);
                         res.json("unknown apikey");

@@ -12,8 +12,8 @@ interface IIA {
     public function isRunning( ):Bool;
     public function dispose( ):Void;
 
-    public var turnOrders(get_turnOrders, null):Array<Order>;
-    public var playerId(get_playerId, null):String;
+    public var turnOrders(default, null):Array<Order>;
+    public var playerId(default, null):String;
 
     public var turnMaxDurationReached:Signal1<String>;
     public var turnComplete:Signal1<TurnResult>;

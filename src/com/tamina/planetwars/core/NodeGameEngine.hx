@@ -3,7 +3,6 @@ package com.tamina.planetwars.core;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IPlayer;
-import js.Node;
 
 class NodeGameEngine extends BaseGameEngine {
 
@@ -24,7 +23,6 @@ class NodeGameEngine extends BaseGameEngine {
             _ia1.turnComplete.remove(ia_ordersResultHandler);
             _ia1.turnMaxDurationReached.remove(maxDuration_reachHandler);
             _ia1.turnError.remove(turnResultErrorHandler);
-
             _ia2.turnComplete.remove(ia_ordersResultHandler);
             _ia2.turnMaxDurationReached.remove(maxDuration_reachHandler);
             _ia2.turnError.remove(turnResultErrorHandler);
@@ -44,6 +42,5 @@ class NodeGameEngine extends BaseGameEngine {
 
     override private function endBattle( result:BattleResult ):IPlayer {
         return super.endBattle(result);
-        //trace("P1 " + _ia1.playerId + " //P2 " + _ia2.playerId + " //Turn " + _currentTurn);
     }
 }

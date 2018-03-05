@@ -13,4 +13,5 @@
 -cp node_modules/hxnodejs/src
 -cp node_modules/hxexpress/src
 -cp node_modules/taminahx
+-cp node_modules/msignal
 -js build/server.js

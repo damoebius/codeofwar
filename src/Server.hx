@@ -1,5 +1,6 @@
 package ;
 
+import com.tamina.planetwars.server.api.events.ServerEventBus;
 import com.tamina.planetwars.server.api.middleware.Cache;
 import com.tamina.planetwars.server.api.routes.ApiRouter;
 import com.tamina.planetwars.server.config.Config;
@@ -13,8 +14,10 @@ class Server {
     private static var _server:Server;
 
     private var _express:ExpressServer;
+    private var _planetWarsServer:PlanetWarsServer;
 
     private function new() {
+        _planetWarsServer = new PlanetWarsServer();
         var mustache = new Mustache();
         _express = new ExpressServer();
         _express.use(BodyParser.json());
@@ -25,11 +28,15 @@ class Server {
         _express.set('view engine', 'mustache');
         _express.set('views', Node.__dirname + '/htdocs/views');
         Cache.setCache(mustache.cache);
-
+        ServerEventBus.instance.botPublished.add(updateScore);
     }
 
     public static function main() {
         Node.console.log("starting planet wars server ");
         _server = new Server();
+    }
+
+    private function updateScore():Void {
+        _planetWarsServer.startUpdate();
     }
 }

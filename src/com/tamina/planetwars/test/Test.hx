@@ -36,7 +36,7 @@ class Test {
         var p1 = new Player("p1", 0, './wopatak.js_8.txt');
         var p2 = new Player("p2", 0, './KurganIA.js_10.txt');
         var g = GameUtil.createRandomGalaxy(711, 435, 20, p1, p2);
-        _ref.engine.getBattleResult(p1, p2, g);
+        _ref._engine.getBattleResult(p1, p2, g);
 
     }
 
