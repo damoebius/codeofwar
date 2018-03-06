@@ -37,6 +37,7 @@ class BaseGameEngine {
     }
 
     public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
+        _logger.log("start battle : " + player1.name + " vs " + player2.name);
         _currentTurn = 0;
         isComputing = false;
         playerOneScore = 0;
@@ -92,7 +93,6 @@ class BaseGameEngine {
     }
 
     private function ia_ordersResultHandler( event ):Void {
-        _logger.log("order received");
         if ( _ia2.turnOrders != null && _ia1.turnOrders != null ) {
             computeCurrentTurn();
         }
@@ -128,7 +128,6 @@ class BaseGameEngine {
     }
 
     private function computeCurrentTurn( ):Void {
-        _logger.log("computeCurrentTurn");
         parseOrder();
         moveShips();
         increasePlanetGrowth();

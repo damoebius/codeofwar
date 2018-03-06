@@ -1,9 +1,7 @@
 package com.tamina.planetwars.server.api.bll;
 
-import js.Node;
-import com.tamina.planetwars.data.Mock;
-import js.node.mongodb.MongoCollection.WriteOpResult;
 import com.tamina.planetwars.server.api.dao.User;
+import js.node.mongodb.MongoCollection.WriteOpResult;
 import js.Promise;
 
 class LocalUserBLL implements IUserBLL{
@@ -48,5 +46,9 @@ class LocalUserBLL implements IUserBLL{
             _user = user;
             resolve(null);
         });
+    }
+
+    public function updateUsersScore(users:Array<User>):Promise<WriteOpResult> {
+        return null;
     }
 }

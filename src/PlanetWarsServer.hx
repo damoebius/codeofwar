@@ -1,15 +1,14 @@
 package ;
 
-import com.tamina.planetwars.server.api.bll.BLLFactory;
-import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.core.NodeGameEngine;
 import com.tamina.planetwars.data.BattleResult;
+import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IAInfo;
 import com.tamina.planetwars.data.Player;
-import com.tamina.planetwars.server.api.bll.UserBLL;
+import com.tamina.planetwars.server.api.bll.BLLFactory;
+import com.tamina.planetwars.server.api.bll.IUserBLL;
 import com.tamina.planetwars.server.api.dao.User;
 import com.tamina.planetwars.utils.GameUtil;
-import com.tamina.planetwars.utils.URLUtil;
 import js.node.Require;
 import js.Node;
 
@@ -18,6 +17,8 @@ class PlanetWarsServer {
     private var _engine:NodeGameEngine;
     private var _iaList:Array<IAInfo>;
     private var _userBLL:IUserBLL;
+    private var _users:Array<User>;
+    private var _games:Array<GameData>;
 
     public function new():Void {
         Node.console.info('init application');
@@ -31,7 +32,8 @@ class PlanetWarsServer {
         _userBLL.getUsers()
         .then(function(users:Array<User>) {
             _iaList = [];
-            for (user in users) {
+            _users = users;
+            for (user in _users) {
                 _iaList.push(new IAInfo(Std.string(user._id), user.username, user.bot, 0));
             }
             process();
@@ -45,9 +47,24 @@ class PlanetWarsServer {
     private function battleCompleteHandler(result:BattleResult) {
         if (result.winner != null) {
             try {
-                getIAInfoByName(result.winner.name).score++;
+                var ia = getIAInfoByName(result.winner.name);
+                ia.score++;
+                removeModule(result.p1.script);
+                removeModule(result.p2.script);
             } catch (e:js.Error) {
                 Node.console.info('Impossible de retrouver ' + result.winner);
+            }
+            if (_games.length > 0) {
+                processBattle(_games.pop());
+            } else {
+                Node.console.log("no more battles");
+                for (ia in _iaList) {
+                    var targetUser:User = Lambda.find(_users, function(user:User) {
+                        return user.bot == ia.url;
+                    });
+                    targetUser.score = ia.score * 10;
+                }
+                _userBLL.updateUsersScore(_users);
             }
         }
     }
@@ -63,21 +80,26 @@ class PlanetWarsServer {
 
     private function process():Void {
         Node.console.log("process");
+        _games = new Array<GameData>();
         for (i in 0..._iaList.length) {
             var targetIA = _iaList[i];
             var p1 = new Player(targetIA.name, 0, Node.__dirname + '/bots/' + targetIA.url);
             for (j in 0... _iaList.length) {
                 var p2 = new Player(_iaList[j].name, 0, Node.__dirname + '/bots/' + _iaList[j].url);
                 if (targetIA.id != _iaList[j].id) {
-                    _engine.dispose();
                     var g = GameUtil.createRandomGalaxy(771, 435, 20, p1, p2);
-                    _engine.getBattleResult(p1, p2, g);
-                    return;
-                    //removeModule(p1.script);
-                    //removeModule(p2.script);
+                    _games.push(new GameData(g, p1, p2));
                 }
             }
         }
+        if (_games.length > 0) {
+            processBattle(_games.pop());
+        }
+    }
+
+    private function processBattle(game:GameData):Void {
+        _engine.dispose();
+        _engine.getBattleResult(game.p1, game.p2, game.galaxy);
     }
 
     private function removeModule(name:String):Void {
@@ -89,4 +111,17 @@ class PlanetWarsServer {
         }
     }
 
+}
+
+class GameData {
+
+    public var galaxy:Galaxy;
+    public var p1:Player;
+    public var p2:Player;
+
+    public function new(galaxy:Galaxy, p1:Player, p2:Player) {
+        this.galaxy = galaxy;
+        this.p1 = p1;
+        this.p2 = p2;
+    }
 }
