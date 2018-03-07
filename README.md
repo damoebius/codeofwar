@@ -1,5 +1,4 @@
 # Code of war 2018
-====
 
 Code of War 2018 is an AI programming game where you write a bot to conquer the galaxy, planet by planet. The rules are simple; each planet produces people per turn, and ships can be used to take over other planets from the enemy or neutral forces. It's inspired by Google Planetwars for those of you that are familiar with the game. Once you have written your bot, you submit it to the official site and it competes online against others from around the world!
 
@@ -98,3 +97,27 @@ The following conditions will cause the game to end:
 - A bot crashes and forfeits the game.
 - A bot exceeds the time limit (1000ms) without completing its orders (it never sends it's turn orders) and is disqualified. This is perhaps overly harsh, but is the way it currently works. It may change in the future to simply be a forfeit.
 - A bot attempts to do something that the tournament manager deems a security issue and is disqualified.
+
+## Create your AI
+
+You just have to edit MyIA.hx, and do things in the getOrders function to return your turn Orders.
+```haxe
+override public function getOrders(context:Galaxy):Array<Order> {
+        var result:Array<Order> = new Array<Order>();
+        //TODO Put your code here
+        return result;
+    }
+```
+
+Then you can compile it with :
+```shell
+npm run build:ai
+```
+
+And try it versus our basic AI on :
+http://localhost:8092/play.html
+
+## Publishing your AI online
+```shell
+npm run publish
+```
