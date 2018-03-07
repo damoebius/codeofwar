@@ -1,0 +1,3 @@
+-cp src
+-main MyIA
+-js assets/htdocs/bots/your_IA.js

@@ -101,7 +101,7 @@ class UserBLL implements IUserBLL{
     public function updateUsersScore(users:Array<User>):Promise<WriteOpResult> {
         return new Promise(function(resolve, reject) {
             MongoClient.connect(Config.getInstance().db, function(error:MongoError, db:MongoDatabase) {
-                /*db.collection(COLLECTION_NAME, null, null).update({_id:null}, users, { upsert : true }, function(error:MongoError, result:WriteOpResult):Void {
+                db.collection(COLLECTION_NAME, null, null).update({_id:null}, users, { upsert : true }, function(error:MongoError, result:WriteOpResult):Void {
                     db.close();
                     if (error != null) {
                         Node.console.error(error);
@@ -109,7 +109,7 @@ class UserBLL implements IUserBLL{
                     } else {
                         resolve(result);
                     }
-                });*/
+                });
             });
         });
     }

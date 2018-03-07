@@ -1,6 +1,6 @@
 -cp src
 -main MyIA
--js build/htdocs/bots/your_IA.js
+-js assets/htdocs/bots/your_IA.js
 
 --next
 

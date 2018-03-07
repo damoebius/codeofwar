@@ -29,6 +29,7 @@
   "scripts": {
     "precommit": "node ./scripts/pre-commit-checkstyle",
     "build": "node ./scripts/build",
+    "build:ia": "haxe build_ia.hxml",
     "start": "node ./build/server",
     "start:dev" : "nodemon --inspect build\\server.js --ignore build\\bots -local --delay 2",
     "publish": "node ./scripts/publish",
