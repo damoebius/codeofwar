@@ -50,7 +50,6 @@ class NodeIA implements IIA {
         try {
             _worker.onmessage({ data:new TurnMessage(playerId, context)});
         } catch (e:js.Error) {
-            Node.console.dir(e);
             turnError.dispatch(playerId);
         }
     }

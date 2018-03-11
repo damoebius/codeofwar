@@ -233,7 +233,7 @@ extern class MongoCollection
 	 * @param  options      - Optional settings.
 	 * @param  callback     - The command result callback.
 	 */
-    function initializeUnorderedBulkOp(options:WriteOption, callback:ResultCallback<js.node.mongodb.UnorderedBulkOperation>):Void;
+    function initializeUnorderedBulkOp():UnorderedBulkOperation;
 
     /**
 	 * Inserts an array of documents into MongoDB.

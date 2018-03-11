@@ -25,6 +25,11 @@ fs.readFile(filename, 'utf8', function (err, data) {
         'apiKey': conf.apiKey
     });
 
+    var host = 'qualif.codeofwar.net';
+    if (process.argv.indexOf('dev') != -1) {
+        host = 'localhost';
+    }
+
     var options = {
         host: 'localhost',
         port: '8092',

@@ -2,7 +2,6 @@ package com.tamina.planetwars.server.api.routes;
 
 import com.tamina.planetwars.server.api.bll.BLLFactory;
 import com.tamina.planetwars.server.api.bll.IUserBLL;
-import com.tamina.planetwars.server.api.bll.UserBLL;
 import com.tamina.planetwars.server.api.dao.User;
 import com.tamina.planetwars.server.api.events.ServerEventBus;
 import express.Request;
@@ -37,7 +36,7 @@ class PublishRoute extends BaseRoute {
             if (body.content != null && body.apiKey != null) {
                 _userBll.getUserByKey(body.apiKey)
                 .then(function(user:User):Void {
-                    if (user != null) {
+                    if (user != null && user.username != null) {
                         user.bot = Date.now().getTime() + '.js';
                         _userBll.addBot(user);
                         Fs.writeFileSync(Node.__dirname + "/bots/" + user.bot, body.content);

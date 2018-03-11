@@ -2,6 +2,7 @@ package com.tamina.planetwars.server.api.bll;
 
 import com.tamina.planetwars.server.api.dao.User;
 import com.tamina.planetwars.server.config.Config;
+import js.node.mongodb.BulkWriteResult;
 import js.node.mongodb.MongoClient;
 import js.node.mongodb.MongoCollection.WriteOpResult;
 import js.node.mongodb.MongoDatabase;
@@ -10,7 +11,7 @@ import js.node.mongodb.MongoError;
 import js.Node;
 import js.Promise;
 
-class UserBLL implements IUserBLL{
+class UserBLL implements IUserBLL {
 
     private static inline var COLLECTION_NAME:String = "users";
 
@@ -85,6 +86,8 @@ class UserBLL implements IUserBLL{
 
         return new Promise(function(resolve, reject) {
             MongoClient.connect(Config.getInstance().db, function(error:MongoError, db:MongoDatabase) {
+                var query:Dynamic = {};
+                query.$set = { bot: user.bot };
                 db.collection(COLLECTION_NAME, null, null).update({_id:user._id}, user, { upsert : true }, function(error:MongoError, result:WriteOpResult):Void {
                     db.close();
                     if (error != null) {
@@ -98,18 +101,24 @@ class UserBLL implements IUserBLL{
         });
     }
 
-    public function updateUsersScore(users:Array<User>):Promise<WriteOpResult> {
+    public function updateUsersScore(users:Array<User>):Promise<BulkWriteResult> {
         return new Promise(function(resolve, reject) {
             MongoClient.connect(Config.getInstance().db, function(error:MongoError, db:MongoDatabase) {
-                db.collection(COLLECTION_NAME, null, null).update({_id:null}, users, { upsert : true }, function(error:MongoError, result:WriteOpResult):Void {
-                    db.close();
-                    if (error != null) {
-                        Node.console.error(error);
-                        reject(error);
-                    } else {
-                        resolve(result);
+                try {
+                    Node.console.log("updating user");
+                    var bulk = db.collection(COLLECTION_NAME, null, null).initializeUnorderedBulkOp();
+                    for (user in users) {
+                        var query:Dynamic = {};
+                        Node.console.log("score " + user.score);
+                        query.$set = { "score": user.score };
+                        bulk.find({bot:user.bot}).upsert().update(query);
                     }
-                });
+                    var result:BulkWriteResult = bulk.execute();
+                    resolve(result);
+                } catch (error:MongoError) {
+                    Node.console.error(error);
+                    reject(error);
+                }
             });
         });
     }

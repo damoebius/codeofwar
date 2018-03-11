@@ -59,14 +59,25 @@ class PlanetWarsServer {
             } else {
                 Node.console.log("no more battles");
                 for (ia in _iaList) {
-                    var targetUser:User = Lambda.find(_users, function(user:User) {
-                        return user.bot == ia.url;
-                    });
+                    var targetUser:User = getUserByIA(ia);
                     targetUser.score = ia.score * 10;
                 }
+                Node.console.log("call update score");
                 _userBLL.updateUsersScore(_users);
             }
         }
+    }
+
+    private function getUserByIA(ia:IAInfo):User {
+        var result:User = null;
+        for (user in _users) {
+            Node.console.log(user.bot + "==" + ia.url);
+            if (user.bot == ia.url) {
+                result = user;
+                break;
+            }
+        }
+        return result;
     }
 
     private function getIAInfoByName(name:String):IAInfo {

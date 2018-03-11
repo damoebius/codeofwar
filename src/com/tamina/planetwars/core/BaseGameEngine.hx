@@ -200,6 +200,14 @@ class BaseGameEngine {
         _logger.log("end battle");
         isComputing = false;
         _endBattleDate = Date.now();
+        _ia1.turnComplete.remove(ia_ordersResultHandler);
+        _ia1.turnMaxDurationReached.remove(maxDuration_reachHandler);
+        _ia1.turnError.remove(turnResultErrorHandler);
+
+        _ia2.turnComplete.remove(ia_ordersResultHandler);
+        _ia2.turnMaxDurationReached.remove(maxDuration_reachHandler);
+        _ia2.turnError.remove(turnResultErrorHandler);
+
         battleComplete.dispatch(result);
         EventBus.getInstance().gameComplete.dispatch(result);
         return result.winner;
