@@ -1,0 +1,281 @@
+package ;
+import com.tamina.planetwars.data.Galaxy;
+import com.tamina.planetwars.data.Order;
+import com.tamina.planetwars.data.Planet;
+import com.tamina.planetwars.utils.GameUtil;
+import com.tamina.planetwars.geom.Point;
+import com.tamina.planetwars.data.Ship;
+import com.tamina.planetwars.data.PlanetPopulation;
+import com.tamina.planetwars.data.Game;
+import js.html.VoidCallback;
+import js.Lib;
+/**
+ * ...
+ * @author d.mouton
+ */
+
+class KurganIA extends WorkerIA
+{
+	private var _context:Galaxy;
+	private var _orders:Array<Order>;
+	private var _counteredShipList:Array<Ship>;
+	private var _currentTurn:Int;
+	private var _numTurnBeforeNextAntoFlood:Int = -1;
+	
+	public static function main():Void {
+		var IA:KurganIA = new KurganIA();
+		IA.init();
+		WorkerIA.instance = IA;
+		
+	}
+	
+	override public function getOrders( context:Galaxy ):Array<Order>
+	{
+		_context = context;
+		debugMessage = " --> p " + context.content[0].population;
+		_orders = new Array<Order>();
+		var myPlanets:Array<Planet> = GameUtil.getPlayerPlanets( id, context );	
+		var otherPlanets:Array<Planet> = GameUtil.getEnnemyPlanets(id, context);
+		
+		if (_numTurnBeforeNextAntoFlood > 0) {
+			_numTurnBeforeNextAntoFlood--;
+		} else if ( _numTurnBeforeNextAntoFlood == 0 ) {
+			for (i in 0...myPlanets.length) {
+				if (myPlanets[i].population > 10 && otherPlanets.length > 0) {
+					var targetPlanet = otherPlanets[0];
+					for (j in 0...otherPlanets.length) {
+						if (otherPlanets[j].owner.id == ennemyFleet[0].owner.id) {
+							targetPlanet = otherPlanets[j];
+						}
+					}
+					_orders.push( new Order(myPlanets[i].id, targetPlanet.id, 11) );
+					myPlanets[i].population -= 11;
+					targetPlanet.population += 11;
+				}
+			}
+			_numTurnBeforeNextAntoFlood--;
+		} else {
+			var ennemyFleet = GameUtil.getEnnemyFleet(id, context);
+			for (i in 0...ennemyFleet.length) {
+				if ( ennemyFleet[i].crew <= 5) {
+					debugMessage = "!!! FLOODER DETECTED !!! ";
+					_numTurnBeforeNextAntoFlood = 5;
+					break;
+				}
+			}
+		}
+		
+		
+		// Counterstrike
+		counterStrike();
+
+		// Attack
+		if ( otherPlanets != null && otherPlanets.length > 0 )
+		{
+			for ( i in 0...myPlanets.length )
+			{
+				var myPlanet:Planet = myPlanets[ i ];
+				var numAttack = 0;
+				while ( isPlanetCanAttack( myPlanet ) && numAttack < 4 )
+				{
+					numAttack++;
+					var target = getNearestAttackablePlanet( myPlanet, otherPlanets );
+					if ( target != null )
+					{
+						_orders.push( new Order( myPlanet.id, target.id, isAttackable( myPlanet, target ) ) );
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				if ( myPlanet.population - getEngagedForceByPlanet( myPlanet, _orders ) == PlanetPopulation.getMaxPopulation( myPlanet.size ) )
+				{
+					_orders.push( new Order( myPlanet.id, getNearestGrowingPlanet( myPlanet, myPlanets ).id, 20 ) );
+				}	
+			}
+		}
+		_currentTurn++;
+		return _orders;
+	}
+	
+	public function init():Void {
+		_counteredShipList = new Array<Ship>();
+		_currentTurn = 0;
+	}
+	
+	private static function ArrayIndexOf<T>(a:Array<T>,item:T):Int {
+		var result = -1;
+		for ( i in 0...a.length) {
+			if (a[i] == item) {
+				result = i;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	private function counterStrike():Void
+	{
+		var ennemyFleet:Array<Ship> = GameUtil.getEnnemyFleet( id, _context );
+		var myPlanets:Array<Planet> = GameUtil.getPlayerPlanets( id, _context );
+		for ( i in 0...ennemyFleet.length )
+		{
+			var s:Ship = ennemyFleet[ i ];
+			if ( ArrayIndexOf( _counteredShipList, s ) < 0 )
+			{
+				if ( s.target.owner.id != s.owner.id && s.owner.id != id )
+				{
+					var invasionNumTurn:Int = s.travelDuration - ( _currentTurn - s.creationTurn );
+					if ( invasionNumTurn <= 0 )
+					{
+						_counteredShipList.push( s );
+					}
+					else
+					{
+						for ( j in 0...myPlanets.length )
+						{
+							var myPlanet:Planet = myPlanets[ j ];
+							var interceptionNumTurn:Int = GameUtil.getTravelNumTurn( myPlanet, s.target );
+							if ( myPlanet != s.target )
+							{
+								if ( interceptionNumTurn == invasionNumTurn + 1
+									&& myPlanet.population - getEngagedForceByPlanet( myPlanet, _orders ) > s.crew + Game.PLANET_GROWTH )
+								{
+									_orders.push( new Order( myPlanet.id, s.target.id, s.crew + Game.PLANET_GROWTH + 1 ) );
+									_counteredShipList.push( s );
+									break;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					_counteredShipList.push( s );
+				}
+			}
+		}
+	}
+	
+	private function getNearestGrowingPlanet( source:Planet, candidats:Array<Planet> ):Planet
+	{
+		var result = candidats[ 0 ];
+		var currentNumTurn = 100000;
+		for ( i in 0...candidats.length )
+		{
+			var element = candidats[ i ];
+			var numTurn = Math.ceil( GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( element.x, element.y ) ) / Game.SHIP_SPEED );
+			if ( currentNumTurn > numTurn && source.id != element.id )
+			{
+				var pop:Int = element.population + numTurn * Game.PLANET_GROWTH + 20;
+				if ( pop < PlanetPopulation.getMaxPopulation( element.size ) )
+				{
+					currentNumTurn = numTurn;
+					result = element;
+				}
+			}
+
+		}
+		return result;
+	}
+	
+	private function getNearestAttackablePlanet( source:Planet, candidats:Array<Planet> ):Planet
+	{
+		var result:Planet = null;
+		var currentDist = 10000.0;
+		for ( i in 0...candidats.length )
+		{
+			var element:Planet = cast candidats[ i ];
+			if ( currentDist > GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( element.x, element.y ) ) )
+			{
+				if ( isAttackable( source, element ) > 0 && !isAlreadyAttacked( element, _orders ) )
+				{
+					currentDist = GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( element.x, element.y ) );
+					result = element;
+				}
+			}
+
+		}
+		return result;
+	}
+	
+	private function isAlreadyAttacked( target:Planet, orderList:Array<Order> ):Bool
+	{
+		var result = false;
+		for ( i in 0..._context.fleet.length )
+		{
+			if ( _context.fleet[ i ].owner.id == this.id && _context.fleet[ i ].target.id == target.id )
+			{
+				result = true;
+			}
+		}
+		for ( i in 0...orderList.length )
+		{
+			if ( orderList[ i ].targetID == target.id )
+			{
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	private function isAttackable( source:Planet, target:Planet ):Int
+	{
+		var result = -1;
+		var numTurn = Math.ceil( GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( target.x, target.y ) ) / Game.SHIP_SPEED );
+		var targetPopulation:Int = ( target.population + numTurn * Game.PLANET_GROWTH );
+		debugMessage += " -- from " + source.id + " to " + target.id + " numTurn " + numTurn + " currentpop : " + target.population + " targetpop : " + targetPopulation;
+ 		if ( targetPopulation > PlanetPopulation.getMaxPopulation( target.size) )
+		{
+			targetPopulation = PlanetPopulation.getMaxPopulation( target.size) ;
+		}
+		if ( source.population - getEngagedForceByPlanet( source, _orders ) > targetPopulation )
+		{
+			result = targetPopulation + 1;
+		}
+		return result;
+	}
+	
+	private function isPlanetCanAttack( target:Planet ):Bool
+	{
+		var result = false;
+		if ( target.population < PlanetPopulation.getMaxPopulation( target.size ) && target.population - getEngagedForceByPlanet( target, _orders ) > 30 )
+		{
+			result = true;
+		}
+		return result;
+	}
+	
+	private function getEngagedForceByPlanet( target:Planet, dataProvider:Array<Order> ):Int
+	{
+		var result = 0;
+		for ( i in 0...dataProvider.length  )
+		{
+			if ( dataProvider[ i ].sourceID == target.id )
+			{
+				result += dataProvider[ i ].numUnits;
+			}
+		}
+		return result;
+	}
+	
+	private function getNearestEnnemyPlanet( source:Planet, candidats:Array<Planet> ):Planet
+	{
+		var result:Planet = candidats[ 0 ];
+		var currentDist:Float = GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( result.x, result.y ) );
+		for ( i in 0...candidats.length )
+		{
+			var element:Planet = candidats[ i ];
+			if ( currentDist > GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( element.x, element.y ) ) )
+			{
+				currentDist = GameUtil.getDistanceBetween( new Point( source.x, source.y ), new Point( element.x, element.y ) );
+				result = element;
+			}
+			
+		}
+		return result;
+	}
+	
+}
