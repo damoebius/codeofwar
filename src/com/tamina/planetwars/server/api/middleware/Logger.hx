@@ -21,12 +21,20 @@ class Logger {
     }
 
     public static function log(message:String, level:String):Void {
-        var now = Date.now();
-        var date = now.getDay() + "-" + now.getMonth() + "-" + now.getFullYear();
-        Fs.appendFile(Node.__dirname + '/logs/' + date + '.log', now.toString() + ":[" + level + "]:" + message + Os.EOL, function(error):Void {
+        Fs.appendFile(getCurrentLogFilename(), Date.now().toString() + ":[" + level + "]:" + message + Os.EOL, function(error):Void {
             if (error != null) {
                 Node.console.error(error);
             }
         });
+    }
+
+    public static function getLogs():String {
+        return Fs.readFileSync(getCurrentLogFilename()).toString();
+    }
+
+    private static function getCurrentLogFilename():String {
+        var now = Date.now();
+        var date = now.getDay() + "-" + now.getMonth() + "-" + now.getFullYear();
+        return Node.__dirname + '/logs/' + date + '.log';
     }
 }
