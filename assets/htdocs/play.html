@@ -60,7 +60,15 @@
 <script src="js/bootstrap.min.js"></script>
 <script>
     function init() {
-        PlanetWars.init("My bot", "your_IA.js", "Basic Bot", "basic_IA.js");
+        var url_string = window.location.href;
+        var url = new URL(url_string);
+        var data = url.searchParams.get("data");
+        if(data != null){
+            var players = JSON.parse(data);
+            PlanetWars.init(data[0].name, data[0].url, data[1].name, data[1].url);
+        } else {
+            PlanetWars.init("My bot", "your_IA.js", "Basic Bot", "basic_IA.js");
+        }
     };
     window.onload = init;
 </script>

@@ -11,7 +11,7 @@
     <div class="container">
 
         <h1>Bots</h1>
-        <p>This is the tournament ranking</p>
+        <p>This is the tournament ranking. You can select two opponents and show their battle.</p>
 
     </div>
 </div>
@@ -23,12 +23,28 @@
                 <div style="margin:20px;">
                     <div class="applicationWindow">
                         <div class="applicationContainer">
+                            <div class="applicationHeader">
+                                <div id="playerOneName" class="playerName left">
+                                    Unknown
+                                </div>
+                                <div id="playerTwoName" class="playerName right">
+                                    Unknown
+                                </div>
+                                <div class="scoreBlock">
+                                    <button id="fightButton" class="fightButton" disabled onclick="fight()">FIGHT</button>
+                                </div>
+                            </div>
                             <table>
                                 {{#bots}}
                                 <tr>
-                                    <td style="min-width: 50px">{{id}}</td>
+                                    <td style="min-width: 50px">
+                                        <input type="radio" name="player1" value="{{url}}" onclick="selectPlayer('{{name}}','{{url}}',0)">
+                                    </td>
                                     <td style="width: 100%">{{name}}</td>
                                     <td>{{score}}</td>
+                                    <td style="min-width: 50px">
+                                        <input type="radio" name="player2" value="{{url}}" style="text-align:right;" onclick="selectPlayer('{{name}}','{{url}}',1)">
+                                    </td>
                                 </tr>
                                 {{/bots}}
                             </table>
@@ -38,13 +54,27 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <script src="/js/jquery-1.9.0.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script>
+    var selectedPlayers = [];
+    var selectPlayer = function(name,url,index){
+        selectedPlayers[index] = {name:name,url:url};
+        if(index == 0){
+            $('#playerOneName').text(name);
+        } else {
+            $('#playerTwoName').text(name);
+        }
+        if(selectedPlayers.length == 2){
+            $('#fightButton').removeAttr('disabled');
+        }
+    }
 
+    var fight = function(){
+        window.location.href = '/play.html?data='+JSON.stringify(selectedPlayers);
+    }
 </script>
 
 </body>
