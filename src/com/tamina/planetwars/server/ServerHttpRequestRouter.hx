@@ -1,8 +1,11 @@
 package com.tamina.planetwars.server;
+
+import com.tamina.planetwars.server.api.middleware.Logger;
 import haxe.ds.StringMap;
 import js.Node.NodeHttpServerReq;
 import js.Node.NodeHttpServerResp;
 import js.Node;
+
 class ServerHttpRequestRouter {
 
     private var routes:StringMap<Dynamic -> Void>;
@@ -16,21 +19,21 @@ class ServerHttpRequestRouter {
     }
 
     public function handler( request:NodeHttpServerReq, response:NodeHttpServerResp ):Void {
-        Node.console.info("url invoked" + request.url);
+        Logger.info("url invoked" + request.url);
         var callback = routes.get(request.url);
         if ( callback != null ) {
-            Node.console.info("callback found");
+            Logger.info("callback found");
             var data = '';
             request.on('data', function( chunk ) {
                 data += chunk;
             });
             request.on('end', function( chunk ) {
-                Node.console.info("DATA END :" + data);
+                Logger.info("DATA END :" + data);
                 var result:Dynamic;
                 try {
                     result = Node.json.parse(data);
                 } catch ( e:Error ) {
-                    Node.console.warn("NO JSON DATA");
+                    Logger.warn("NO JSON DATA");
                     result = null;
                 }
                 callback(result);

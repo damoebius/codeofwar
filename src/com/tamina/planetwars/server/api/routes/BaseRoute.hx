@@ -1,11 +1,11 @@
 package com.tamina.planetwars.server.api.routes;
 
+import com.tamina.planetwars.server.api.middleware.Logger;
 import express.Error;
 import express.Response;
 import express.Router;
 import haxe.HTTPStatus;
 import js.node.mongodb.MongoError;
-import js.Node;
 
 class BaseRoute {
 
@@ -22,7 +22,7 @@ class BaseRoute {
     }
 
     private function sendErrorResponse(res:Response, error:MongoError):Void {
-        Node.console.log(error);
+        Logger.error(error.message);
         res.status(HTTPStatus.InternalServerError);
         res.json(error);
     }

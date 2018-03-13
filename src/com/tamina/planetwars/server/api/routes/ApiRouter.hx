@@ -15,6 +15,7 @@ class ApiRouter {
         new PublishRoute().init(router);
         new LoginRoute().init(router);
         new BotsRoute().init(router);
+        new LogsRoute().init(router);
         return router;
     }
 }

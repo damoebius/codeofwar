@@ -4,6 +4,7 @@ import com.tamina.planetwars.data.Game;
 import com.tamina.planetwars.data.Order;
 import com.tamina.planetwars.data.TurnMessage;
 import com.tamina.planetwars.data.TurnResult;
+import com.tamina.planetwars.server.api.middleware.Logger;
 import haxe.Json;
 import js.Node;
 import msignal.Signal;
@@ -27,7 +28,7 @@ class NodeIA implements IIA {
             _worker = Node.require(script);
             _worker.postMessage = worker_messageHandler;
         } catch (e:js.Error) {
-            Node.console.warn('BAD ROBOT');
+            Logger.warn('BAD ROBOT');
         }
         _startTime = 0;
     }

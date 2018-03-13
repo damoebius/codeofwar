@@ -4,6 +4,7 @@ import com.tamina.planetwars.data.Game;
 import com.tamina.planetwars.data.Order;
 import com.tamina.planetwars.data.TurnMessage;
 import com.tamina.planetwars.data.TurnResult;
+import com.tamina.planetwars.server.api.middleware.Logger;
 import js.Node;
 import msignal.Signal;
 
@@ -30,7 +31,7 @@ class MockNodeIA implements IIA {
             _worker = Node.require(script);
             _worker.postMessage = worker_messageHandler;
         } catch ( e:Error ) {
-            Node.console.warn('BAD ROBOT');
+            Logger.warn('BAD ROBOT');
         }
         _startTime = 0;
     }
@@ -75,7 +76,7 @@ class MockNodeIA implements IIA {
     private function worker_messageHandler( message:Dynamic ):Void {
         _startTime = 0;
         testTurnDuration();
-//Node.console.dir(message);
+//Logger.dir(message);
         if ( message != null ) {
             var turnResult:TurnResult = message;
             _turnOrders = turnResult.orders;

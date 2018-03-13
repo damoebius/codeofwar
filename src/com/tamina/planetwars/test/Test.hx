@@ -2,9 +2,9 @@ package com.tamina.planetwars.test;
 
 import com.tamina.planetwars.data.Mock;
 import com.tamina.planetwars.data.Player;
+import com.tamina.planetwars.server.api.middleware.Logger;
 import com.tamina.planetwars.service.GetScoreByIAListRequest;
 import com.tamina.planetwars.utils.GameUtil;
-import js.Node;
 import PlanetWarsServer;
 
 class Test {
@@ -32,7 +32,7 @@ class Test {
     }
 
     private function iadownloader_completeHandler( ):Void {
-        Node.console.info('TEST DOWNLOAD COMPLETE ');
+        Logger.info('TEST DOWNLOAD COMPLETE ');
         var p1 = new Player("p1", 0, './wopatak.js_8.txt');
         var p2 = new Player("p2", 0, './KurganIA.js_10.txt');
         var g = GameUtil.createRandomGalaxy(711, 435, 20, p1, p2);
@@ -41,6 +41,6 @@ class Test {
     }
 
     private function testServiceResultHandler( resp:NodeHttpClientResp ):Void {
-        Node.console.info('testServiceResultHandler ' + resp.statusCode);
+        Logger.info('testServiceResultHandler ' + resp.statusCode);
     }
 }

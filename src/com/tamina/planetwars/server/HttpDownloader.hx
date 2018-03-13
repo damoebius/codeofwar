@@ -1,7 +1,9 @@
 package com.tamina.planetwars.server;
 import com.tamina.planetwars.core.NodeEventDispatcher;
+import com.tamina.planetwars.server.api.middleware.Logger;
 import com.tamina.planetwars.utils.URLUtil;
 import js.Node;
+
 class HttpDownloader extends NodeEventDispatcher {
 
     private var _url:NodeUrlObj;
@@ -16,13 +18,13 @@ class HttpDownloader extends NodeEventDispatcher {
     }
 
     private function downloadHandler( response:NodeHttpClientResp ):Void {
-        Node.console.info('Download : ' + _url.href);
+        Logger.info('Download : ' + _url.href);
         var data:String = '';
         response.on('data', function( chunk:String ):Void {
             data += chunk;
         });
         response.on('end', function( ):Void {
-            Node.console.info('END OF FILE ' + data.length);
+            Logger.info('END OF FILE ' + data.length);
             data = parseData(data);
             Node.fs.writeFileSync(URLUtil.getFileName(_url.href), data);
             _eventDispatcher.emit(IOEvent.COMPLETE);
@@ -47,7 +49,7 @@ class HttpDownloader extends NodeEventDispatcher {
 
     private function errorHandler( err:NodeErr ):Void {
         if ( err != null ) {
-            Node.console.error("Error downloading " + err);
+            Logger.error("Error downloading " + err);
         }
     }
 }

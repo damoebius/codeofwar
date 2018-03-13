@@ -1,14 +1,14 @@
 package com.tamina.planetwars.core;
 
-import js.Node;
 import com.tamina.planetwars.data.BattleResult;
 import com.tamina.planetwars.data.Galaxy;
 import com.tamina.planetwars.data.IPlayer;
+import com.tamina.planetwars.server.api.middleware.Logger;
 
 class NodeGameEngine extends BaseGameEngine {
 
     public function new( ) {
-        super(cast Node.console);
+        super(cast Logger);
     }
 
     override public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
@@ -42,7 +42,7 @@ class NodeGameEngine extends BaseGameEngine {
     }
 
     override private function endBattle( result:BattleResult ):IPlayer {
-        Node.console.dir(result);
+        Logger.info(result.message);
         return super.endBattle(result);
     }
 }

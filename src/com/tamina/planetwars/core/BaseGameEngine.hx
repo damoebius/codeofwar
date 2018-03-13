@@ -37,7 +37,7 @@ class BaseGameEngine {
     }
 
     public function getBattleResult( player1:IPlayer, player2:IPlayer, galaxy:Galaxy, turnSpeed:Int = 1 ):Void {
-        _logger.log("start battle : " + player1.name + " vs " + player2.name);
+        _logger.info("start battle : " + player1.name + " vs " + player2.name);
         _currentTurn = 0;
         isComputing = false;
         playerOneScore = 0;
@@ -197,7 +197,7 @@ class BaseGameEngine {
     }
 
     private function endBattle( result:BattleResult ):IPlayer {
-        _logger.log("end battle");
+        _logger.info("end battle");
         isComputing = false;
         _endBattleDate = Date.now();
         _ia1.turnComplete.remove(ia_ordersResultHandler);
